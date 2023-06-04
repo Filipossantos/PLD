@@ -7,16 +7,13 @@ entity VendingMachine is
     port (
         clk : in std_logic;
         reset : in std_logic;
-        P1 : in std_logic;
+        P1 : in std_logic; 
         P2 : in std_logic;
         P3 : in std_logic;
         P4 : in std_logic;
         LCD_RS : out std_logic;
         LCD_E : out std_logic;
-        LCD_DB4 : out std_logic;
-        LCD_DB5 : out std_logic;
-        LCD_DB6 : out std_logic;
-        LCD_DB7 : out std_logic;
+        data : out STD_LOGIC_VECTOR (7 downto 0);
         buzzer : out std_logic;
         anode : out std_logic_vector(3 downto 0);
 	    led_out : out std_logic_vector(6 downto 0)
@@ -24,12 +21,15 @@ entity VendingMachine is
 end entity VendingMachine;
 
 architecture Behavioral of VendingMachine is
-    -- Define states
+    type arr is array (1 to 22) of std_logic_vector(7 downto 0);
+    constant data_rom: arr := (X"38",X"0C",X"06",X"01",X"C0",X"30", X"31", X"32", X"33", X"34", X"35", X"36", X"37", X"38", X"39",X"41", X"42", X"43", X"44", X"45", X"46", X"47");
+    signal en_timing : integer range  0 to 100000;
+    signal data_pos: integer range  1 to 22;
     type State is (IDLE, SELECT_DRINK, PAYMENT, INVALID_PIN, DISPENSING);
     signal current_state, next_state : State;
     signal counter_start, counter_reset : std_logic := '0';
     signal counter : integer range 0 to 1000000000 := 0;
-    -- Internal signals
+  
     signal drink_selected : integer range 0 to 4;
     signal pin_entered : std_logic_vector(3 downto 0);
     signal payment_successful : std_logic;
@@ -38,11 +38,11 @@ architecture Behavioral of VendingMachine is
 	signal number : std_logic_vector(15 downto 0) := "0100001100100001";
 
 begin
-    -- Define the Vending Machine process
+  
     vending_machine: process (clk, reset)
     begin
         if reset = '1' then
-            -- Reset to initial state
+        
             current_state <= IDLE;
             drink_selected <= 0;
             pin_entered <= (others => '0');
@@ -54,7 +54,24 @@ begin
         elsif rising_edge(clk) then
           
             current_state <= next_state;
-
+            en_timing <= en_timing +1;
+            if en_timing <= 50000 then
+            LCD_E <= '1';
+            data <= data_rom(data_pos)(7 downto 0);
+            elsif en_timing > 50000 and en_timing < 100000 then
+            LCD_E <= '0';
+            elsif en_timing = 100000 then
+            en_timing <= 0;
+            end if;
+            if data_pos <= 5 then
+            LCD_RS <= '0';
+            elsif data_pos > 5 then
+            LCD_RS <= '1';
+            end if;
+            
+            if data_pos = 22 then
+                data_pos <= 5;
+            end if;
             case current_state is
                 when IDLE =>
                     if P1 = '1'AND P2='1' AND P3='0' AND P4='0' then

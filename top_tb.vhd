@@ -9,22 +9,18 @@ architecture Behavioral of VendingMachine_TB is
     -- Component declaration for DUT
     component VendingMachine is
         port (
-            clk : in std_logic;
-            reset : in std_logic;
-            P1 : in std_logic;
-            P2 : in std_logic;
-            P3 : in std_logic;
-            P4 : in std_logic;
-            LCD_RS : out std_logic;
-            LCD_E : out std_logic;
-            LCD_DB4 : out std_logic;
-            LCD_DB5 : out std_logic;
-            LCD_DB6 : out std_logic;
-            LCD_DB7 : out std_logic;
-       
-            buzzer : out std_logic;
-            anode : out std_logic_vector(3 downto 0);
-            led_out : out std_logic_vector(6 downto 0)
+                clk : in std_logic;
+        reset : in std_logic;
+        P1 : in std_logic;
+        P2 : in std_logic;
+        P3 : in std_logic;
+        P4 : in std_logic;
+        LCD_RS : out std_logic;
+        LCD_E : out std_logic;
+        data : out STD_LOGIC_VECTOR (7 downto 0);
+        buzzer : out std_logic;
+        anode : out std_logic_vector(3 downto 0);
+	    led_out : out std_logic_vector(6 downto 0)
         );
     end component VendingMachine;
 
@@ -37,15 +33,11 @@ architecture Behavioral of VendingMachine_TB is
     signal P4 : std_logic := '0';
     signal LCD_RS : std_logic;
     signal LCD_E : std_logic;
-    signal LCD_DB4 : std_logic;
-    signal LCD_DB5 : std_logic;
-    signal LCD_DB6 : std_logic;
-    signal LCD_DB7 : std_logic;
     signal buzzer : std_logic;
     signal anode : std_logic_vector(3 downto 0);
     signal led_out : std_logic_vector(6 downto 0);
-
-    constant PERIOD : time := 1000ms;
+    signal data : STD_LOGIC_VECTOR (7 downto 0) := "00000000";
+    constant PERIOD : time := 10ms;
 
 begin
     -- Instantiate the DUT
@@ -59,11 +51,7 @@ begin
             P4 => P4,
             LCD_RS => LCD_RS,
             LCD_E => LCD_E,
-            LCD_DB4 => LCD_DB4,
-            LCD_DB5 => LCD_DB5,
-            LCD_DB6 => LCD_DB6,
-            LCD_DB7 => LCD_DB7,
-
+            data => data,
             buzzer => buzzer,
             anode => anode,
             led_out => led_out
