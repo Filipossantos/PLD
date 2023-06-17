@@ -9,19 +9,20 @@ architecture Behavioral of VendingMachine_TB is
     -- Component declaration for DUT
     component VendingMachine is
         port (
-                clk : in std_logic;
+          clk : in std_logic;
         reset : in std_logic;
-        P1 : in std_logic;
+        P1 : in std_logic; 
         P2 : in std_logic;
         P3 : in std_logic;
-        P4 : in std_logic;
-        LCD_RS : out std_logic;
-        LCD_E : out std_logic;
-        data : out STD_LOGIC_VECTOR (7 downto 0);
+        P4 : in std_logic; 
+        LED1 : out std_logic;
+        LED2 : out std_logic;
+        LED3 : out std_logic;
+        LED4 : out std_logic;
         buzzer : out std_logic;
         anode : out std_logic_vector(3 downto 0);
 	    led_out : out std_logic_vector(6 downto 0)
-        );
+    );
     end component VendingMachine;
 
     -- Signals for testbench
@@ -31,13 +32,14 @@ architecture Behavioral of VendingMachine_TB is
     signal P2 : std_logic := '0';
     signal P3 : std_logic := '0';
     signal P4 : std_logic := '0';
-    signal LCD_RS : std_logic;
-    signal LCD_E : std_logic;
+    signal LED1 : std_logic;
+    signal LED2 : std_logic;
+    signal LED3 : std_logic;
+    signal LED4 : std_logic;
     signal buzzer : std_logic;
     signal anode : std_logic_vector(3 downto 0);
     signal led_out : std_logic_vector(6 downto 0);
-    signal data : STD_LOGIC_VECTOR (7 downto 0) := "00000000";
-    constant PERIOD : time := 10ms;
+    constant PERIOD : time := 10ns;
 
 begin
     -- Instantiate the DUT
@@ -49,9 +51,10 @@ begin
             P2 => P2,
             P3 => P3,
             P4 => P4,
-            LCD_RS => LCD_RS,
-            LCD_E => LCD_E,
-            data => data,
+            LED1 => LED1,
+            LED2 => LED2,
+            LED3 => LED3,
+            LED4 => LED4,
             buzzer => buzzer,
             anode => anode,
             led_out => led_out
@@ -78,26 +81,27 @@ begin
         P4 <= '0';
        wait for PERIOD;
         reset <= '0';
-     
+     wait for PERIOD;
          P2 <= '1';
          P1 <= '1';
-         wait for Period;
+         wait for PERIOD*100000000;
          P2 <= '0';
          P1 <= '0';
-         wait for PERIOD;
+         wait for PERIOD*100000000;
          P4 <= '1';
-         wait for PERIOD;
+         wait for PERIOD*100000000;
          P4 <= '0';
-          wait for PERIOD;
+          wait for PERIOD*100000000;
         P1 <= '1';
         P2 <= '1';
         P3 <= '1';
         P4 <= '1';
-        wait for PERIOD;
+        wait for PERIOD*100000000;
          P1 <= '0';
         P2 <= '0';
         P3 <= '0';
         P4 <= '0';
+        
    
         -- End of simulation
         wait;
